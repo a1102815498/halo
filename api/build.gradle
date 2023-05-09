@@ -8,6 +8,7 @@ group = 'run.halo.app'
 description = 'API of halo project, connecting by other projects.'
 
 repositories {
+    mavenLocal()
     mavenCentral()
 }
 

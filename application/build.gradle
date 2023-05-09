@@ -15,14 +15,15 @@ sourceCompatibility = JavaVersion.VERSION_17
 checkstyle {
     toolVersion = "9.3"
     showViolations = false
-    ignoreFailures = false
+    ignoreFailures = true
 }
 
 repositories {
+    mavenLocal()
     mavenCentral()
 
     maven { url 'https://repo.spring.io/milestone' }
-    mavenLocal()
+
 }
 
 

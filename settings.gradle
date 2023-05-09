@@ -1,5 +1,6 @@
 pluginManagement {
     repositories {
+          mavenLocal() //直接使用本地maven仓库
         maven { url 'https://repo.spring.io/milestone' }
         gradlePluginPortal()
     }

@@ -12,6 +12,7 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.dao.OptimisticLockingFailureException;
 import org.springframework.stereotype.Component;
 import org.springframework.util.Assert;
@@ -63,6 +64,7 @@ public class PostServiceImpl extends AbstractContentService implements PostServi
 
     @Override
     public Mono<ListResult<ListedPost>> listPost(PostQuery query) {
+        Mono<String> contextUsername = getContextUsername();
         Comparator<Post> comparator =
             PostSorter.from(query.getSort(), query.getSortOrder());
         return client.list(Post.class, postListPredicate(query),
@@ -71,6 +73,16 @@ public class PostServiceImpl extends AbstractContentService implements PostServi
                         listResult.get().map(this::getListedPost)
                     )
                     .concatMap(Function.identity())
+                .flatMap(post->{
+                    return  contextUsername.map( it-> {
+                            if (it.equals("admin")){
+                                return     Pair.of(post, true);
+                            }else {
+                                return Pair.of(post, post.getOwner().getName().equals(it));
+                            }
+                        }
+                    );
+                }).filter(e->e.getRight()).map(e->e.getLeft())
                     .collectList()
                     .map(listedPosts -> new ListResult<>(listResult.getPage(), listResult.getSize(),
                         listResult.getTotal(), listedPosts)
